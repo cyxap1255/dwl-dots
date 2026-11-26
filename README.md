@@ -1,2 +1,1 @@
-# dwl-dots
-My dwl dotfiles
+![photo](swappy-20261126_094917.png)
