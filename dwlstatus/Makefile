@@ -1,0 +1,41 @@
+CC = gcc
+CFLAGS   = -std=c99 -Wall -Wextra -Werror -Wshadow -Wformat=2 -pedantic -Os -march=native -flto
+CPPFLAGS = -D_FORTIFY_SOURCE=2 -D_DEFAULT_SOURCE -fstack-protector-strong
+LDFLAGS  = -flto -Wl,-z,relro,-z,now
+TARGET = dwlstatus
+PREFIX = /usr/local/bin
+
+SRCS = dwlstatus.c \
+       modules/battery.c \
+       modules/date.c \
+       modules/kernel.c \
+       modules/time.c \
+       modules/wifi_ssid.c \
+       modules/cpu_usage.c \
+       modules/ethernet_ssid.c \
+       modules/mem_usage.c \
+       modules/volume.c \
+       modules/disk_usage.c
+
+OBJS = $(SRCS:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $(TARGET)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+install: $(TARGET)
+	mkdir -p $(DESTDIR)$(PREFIX)
+	cp -f $(TARGET) $(DESTDIR)$(PREFIX)
+	chmod 755 $(DESTDIR)$(PREFIX)/$(TARGET)
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/$(TARGET)
+
+clean:
+	rm -f $(OBJS) dwlstatus.o modules/modules.o $(TARGET)
+
+.PHONY: all install uninstall clean
